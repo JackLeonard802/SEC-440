@@ -12,7 +12,7 @@ def BooeyEncryption():
         smem = Fernet.generate_key()
 
         # Create an encrypted variant of smem on disk (smem-enc)
-        smem_enc = rsa.encrypt(smem.encode(), publicKey)
+        smem_enc = rsa.encrypt(smem, publicKey)
 
         with open('smem-enc', 'w') as f:
             f.write(smem_enc)
