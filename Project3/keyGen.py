@@ -13,6 +13,7 @@ private_key = key.private_bytes(
     crypto_serialization.PrivateFormat.TraditionalOpenSSL,
     crypto_serialization.NoEncryption()
 )
+private_key = private_key.decode('utf-8')
 
 print(private_key)
 
@@ -23,4 +24,6 @@ public_key = key.public_key().public_bytes(
 print(
 
 )
+    
+public_key = public_key.decode('utf-8')
 print(public_key)

