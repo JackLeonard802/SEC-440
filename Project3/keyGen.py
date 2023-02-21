@@ -10,7 +10,7 @@ key = rsa.generate_private_key(
 
 private_key = key.private_bytes(
     crypto_serialization.Encoding.PEM,
-    crypto_serialization.PrivateFormat.PKCS8,
+    crypto_serialization.PrivateFormat.TraditionalOpenSSL,
     crypto_serialization.NoEncryption()
 )
 

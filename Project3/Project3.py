@@ -76,6 +76,7 @@ def BooeyDecryption():
     # Read the RSA private key from disk
     with open('bababooey.pem', mode='rb') as f:
         keyData = f.read()
+        print(keyData)
     privateKey = rsa.PrivateKey._load_pkcs1_pem(keyData)
 
     # Read the encrypted symmetric key from disk
