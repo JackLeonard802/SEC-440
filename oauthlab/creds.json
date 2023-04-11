@@ -1,6 +1,6 @@
 {
-    "client_id":"967f7b44aeec6c5ba15b",
-    "client_secret":"2e9ae52be2ee448178dd35942da4d4e998b27441",
+    "client_id":"secret",
+    "client_secret":"secret",
     "authorization_base_url":"https://github.com/login/oauth/authorize",
     "token_url":"https://github.com/login/oauth/access_token"
 }
